@@ -16,10 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "solver.h"
 
@@ -37,7 +35,7 @@ typedef struct
 {
     bool (*match)(PCValue lhs, PCValue rhs);
     int (*get_delta)(PCValue lhs, PCValue rhs);
-    int n_pairs;
+    int n_boxes;
     ArmBox boxes[];
 } Solvers;
 
@@ -118,12 +116,9 @@ PBox make_box(PBox box, PBox next_grid, int width, int radius, bool odd)
         delta_right = radius - 1;
     }
 
-    printf("Add diagonal at 0x%X, value %d\n", box, box->first.a);
-
     init_position(&box->first, row_top + delta_left, row_bottom + delta_right);
     init_position(&box->second, row_top + delta_right, row_bottom + delta_left);
 
-    printf("Added diagonal at 0x%X, value %d\n", box, box->first.a);
     box->skip_to = next_grid;
     ++box;
 
@@ -144,12 +139,10 @@ PBox make_box(PBox box, PBox next_grid, int width, int radius, bool odd)
         ++box;
     }
 
-    printf("Box added till 0x%X\n", box);
-
     return box;
 }
 
-PBox make_pairs(PBox box, PBox next_grid, int width, int radius, bool field_matching, bool odd)
+PBox make_boxes(PBox box, PBox next_grid, int width, int radius, bool field_matching, bool odd)
 {
     int index;
 
@@ -178,25 +171,23 @@ build_solver(int width, int radius,
     PBox next_grid;
     PBox box;
     int n_grid;
-    int n_pairs;
+    int n_boxes;
     int size;
 
     n_grid = field_matching
                  ? radius * radius
                  : radius;
 
-    n_pairs = grid == GRID_BOTH
+    n_boxes = grid == GRID_BOTH
                   ? n_grid * 2
                   : n_grid;
 
-    size = sizeof(Solvers) + sizeof(ArmBox) * n_pairs;
-    printf("Solver size %zu for %u pairs\n", size, n_pairs);
+    size = sizeof(Solvers) + sizeof(ArmBox) * n_boxes;
 
     solvers = (Solvers *)malloc(size);
     memset(solvers, 0, size);
-    printf("Solver created\n");
 
-    solvers->n_pairs = n_pairs;
+    solvers->n_boxes = n_boxes;
 
     set_solver_modes(solvers, matching, resolver);
 
@@ -206,22 +197,13 @@ build_solver(int width, int radius,
                     ? box + n_grid
                     : NULL;
 
-    printf("Making pairs starting from 0x%X, last 0x%X\n", box, box + n_pairs);
-
     if (grid == GRID_ODD || grid == GRID_BOTH)
-        box = make_pairs(box, next_grid, width, radius, field_matching, true);
+        box = make_boxes(box, next_grid, width, radius, field_matching, true);
 
     if (grid == GRID_EVEN || grid == GRID_BOTH)
-        box = make_pairs(box, NULL, width, radius, field_matching, false);
+        box = make_boxes(box, NULL, width, radius, field_matching, false);
 
     --box;
-    printf("Ended at 0x%X: (%d x %d) : (%d x %d) => 0x%X\n",
-           box,
-           box->first.a,
-           box->first.b,
-           box->second.a,
-           box->second.b,
-           box->skip_to);
 
     box->skip_to = NULL;
 
@@ -243,7 +225,7 @@ int apply_solver(PSolver solver, int *const data, int position)
     solvers = (Solvers *)solver;
 
     box = &solvers->boxes[0];
-    pend = box + solvers->n_pairs;
+    pend = box + solvers->n_boxes;
 
     while (box && box < pend)
     {
