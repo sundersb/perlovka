@@ -1,3 +1,8 @@
+Backup
+obj
+.vscode/c_cpp_properties.json
+*.lnk
+
 # Prerequisites
 *.d
 
