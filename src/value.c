@@ -15,95 +15,107 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #include "value.h"
 #include "balance.h"
 
-static inline int min(int a, int b)
+static inline int
+min (int a, int b)
 {
-    return a < b ? a : b;
+  return a < b ? a : b;
 }
 
-static inline int max(int a, int b)
+static inline int
+max (int a, int b)
 {
-    return a > b ? a : b;
+  return a > b ? a : b;
 }
 
-void init_value(PValue value, int a, int b)
+void
+init_value (PValue value, int a, int b)
 {
-    value->a = a;
-    value->b = b;
+  value->a = a;
+  value->b = b;
 }
 
-void init_balanced_value(PValue value, int a, int b)
+void
+init_balanced_value (PValue value, int a, int b)
 {
-    value->a = a;
-    value->b = b;
-    value->balance = balance_of(a, b);
+  value->a = a;
+  value->b = b;
+  value->balance = balance_of (a, b);
 }
 
-int get_value_maximum(PCValue value)
+int
+get_value_maximum (PCValue value)
 {
-    if (is_positive(value->balance))
-        return max(value->a, value->b);
-    else
-        return -min(value->a, value->b);
+  if (is_positive (value->balance))
+    return max (value->a, value->b);
+  else
+    return -min (value->a, value->b);
 }
 
-int get_value_minimum(PCValue value)
+int
+get_value_minimum (PCValue value)
 {
-    if (value->balance == BALANCE_POSITIVE)
-        return min(value->a, value->b);
-    else if (value->balance == BALANCE_NEGATIVE)
-        return -max(value->a, value->b);
-    else if (value->balance == BALANCE_SOFT_NEGATIVE)
-        return -(value->a == 0 ? value->b : value->a);
-    else if (value->balance == BALANCE_SOFT_POSITIVE)
-        return value->a == 0? value->b : value->a;
-    else
-        return 0;
+  if (value->balance == BALANCE_POSITIVE)
+    return min (value->a, value->b);
+  else if (value->balance == BALANCE_NEGATIVE)
+    return -max (value->a, value->b);
+  else if (value->balance == BALANCE_SOFT_NEGATIVE)
+    return -(value->a == 0 ? value->b : value->a);
+  else if (value->balance == BALANCE_SOFT_POSITIVE)
+    return value->a == 0 ? value->b : value->a;
+  else
+    return 0;
 }
 
-int get_minimal_delta(PCValue lhs, PCValue rhs)
+int
+get_minimal_delta (PCValue lhs, PCValue rhs)
 {
-    return min(get_value_minimum(lhs), get_value_minimum(rhs));
+  return min (get_value_minimum (lhs), get_value_minimum (rhs));
 }
 
-int get_least_of_max_delta(PCValue lhs, PCValue rhs)
+int
+get_least_of_max_delta (PCValue lhs, PCValue rhs)
 {
-    return min(get_value_maximum(lhs), get_value_maximum(rhs));
+  return min (get_value_maximum (lhs), get_value_maximum (rhs));
 }
 
-int get_largest_of_min_delta(PCValue lhs, PCValue rhs)
+int
+get_largest_of_min_delta (PCValue lhs, PCValue rhs)
 {
-    return max(get_value_minimum(lhs), get_value_minimum(rhs));
+  return max (get_value_minimum (lhs), get_value_minimum (rhs));
 }
 
-int get_maximal_delta(PCValue lhs, PCValue rhs)
+int
+get_maximal_delta (PCValue lhs, PCValue rhs)
 {
-    return max(get_value_maximum(lhs), get_value_maximum(rhs));
+  return max (get_value_maximum (lhs), get_value_maximum (rhs));
 }
 
-bool match_strict(PCValue lhs, PCValue rhs)
+bool
+match_strict (PCValue lhs, PCValue rhs)
 {
-    return are_strict_complement(lhs->balance, rhs->balance);
+  return are_strict_complement (lhs->balance, rhs->balance);
 }
 
-bool match_soft(PCValue lhs, PCValue rhs)
+bool
+match_soft (PCValue lhs, PCValue rhs)
 {
-    return are_soft_complement(lhs->balance, rhs->balance);
+  return are_soft_complement (lhs->balance, rhs->balance);
 }
 
-void fix_value(PValue value, int delta)
+void
+fix_value (PValue value, int delta)
 {
-    if (is_positive(value->balance))
+  if (is_positive (value->balance))
     {
-        value->a -= delta;
-        value->b -= delta;
+      value->a -= delta;
+      value->b -= delta;
     }
-    else
+  else
     {
-        value->a += delta;
-        value->b += delta;
+      value->a += delta;
+      value->b += delta;
     }
 }

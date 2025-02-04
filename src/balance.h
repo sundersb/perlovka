@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef BALANCE_H
 #define BALANCE_H
 
@@ -26,95 +25,106 @@
  */
 typedef enum
 {
-    /**
-     * Both values are zero
-     */
-    BALANCE_ZERO,
+  /**
+   * Both values are zero
+   */
+  BALANCE_ZERO,
 
-    /**
-     * One value is positive, another is negative
-     */
-    BALANCE_DIFFERENT,
+  /**
+   * One value is positive, another is negative
+   */
+  BALANCE_DIFFERENT,
 
-    /**
-     * Both values are positive
-     */
-    BALANCE_POSITIVE,
+  /**
+   * Both values are positive
+   */
+  BALANCE_POSITIVE,
 
-    /**
-     * Both values are negative
-     */
-    BALANCE_NEGATIVE,
+  /**
+   * Both values are negative
+   */
+  BALANCE_NEGATIVE,
 
-    /**
-     * One value is positive, another is zero
-     */
-    BALANCE_SOFT_POSITIVE,
+  /**
+   * One value is positive, another is zero
+   */
+  BALANCE_SOFT_POSITIVE,
 
-    /**
-     * One value is negative, another is zero
-     */
-    BALANCE_SOFT_NEGATIVE,
+  /**
+   * One value is negative, another is zero
+   */
+  BALANCE_SOFT_NEGATIVE,
 } SignBalance;
 
 /**
  * Get signum balance of two values
  */
-static inline SignBalance balance_of(int a, int b)
+static inline SignBalance
+balance_of (int a, int b)
 {
-    if (a < 0)
+  if (a < 0)
     {
-        if (b < 0)
-            return BALANCE_NEGATIVE;
-        else if (b == 0)
-            return BALANCE_SOFT_NEGATIVE;
-        else
-            return BALANCE_DIFFERENT;
+      if (b < 0)
+        return BALANCE_NEGATIVE;
+      else if (b == 0)
+        return BALANCE_SOFT_NEGATIVE;
+      else
+        return BALANCE_DIFFERENT;
     }
-    else if (a > 0)
+  else if (a > 0)
     {
-        if (b < 0)
-            return BALANCE_DIFFERENT;
-        else if (b == 0)
-            return BALANCE_SOFT_POSITIVE;
-        else
-            return BALANCE_POSITIVE;
+      if (b < 0)
+        return BALANCE_DIFFERENT;
+      else if (b == 0)
+        return BALANCE_SOFT_POSITIVE;
+      else
+        return BALANCE_POSITIVE;
     }
-    else
+  else
     {
-        if (b < 0)
-            return BALANCE_SOFT_NEGATIVE;
-        else if (b == 0)
-            return BALANCE_ZERO;
-        else
-            return BALANCE_SOFT_POSITIVE;
+      if (b < 0)
+        return BALANCE_SOFT_NEGATIVE;
+      else if (b == 0)
+        return BALANCE_ZERO;
+      else
+        return BALANCE_SOFT_POSITIVE;
     }
 }
 
-static inline bool is_positive(SignBalance balance)
+static inline bool
+is_positive (SignBalance balance)
 {
-    return balance == BALANCE_POSITIVE || balance == BALANCE_SOFT_POSITIVE;
+  return balance == BALANCE_POSITIVE || balance == BALANCE_SOFT_POSITIVE;
 }
 
-static inline bool is_negative(SignBalance balance)
+static inline bool
+is_negative (SignBalance balance)
 {
-    return balance == BALANCE_NEGATIVE || balance == BALANCE_SOFT_NEGATIVE;
+  return balance == BALANCE_NEGATIVE || balance == BALANCE_SOFT_NEGATIVE;
 }
 
 /**
- * Two pairs are softly complement (one positive, another negative, one 'soft' sign allowed)
+ * Two pairs are softly complement (one positive, another negative, one 'soft'
+ * sign allowed)
  */
-static inline bool are_soft_complement(SignBalance lhs, SignBalance rhs)
+static inline bool
+are_soft_complement (SignBalance lhs, SignBalance rhs)
 {
-    return (lhs == BALANCE_NEGATIVE && is_positive(rhs)) || (lhs == BALANCE_SOFT_NEGATIVE && rhs == BALANCE_POSITIVE) || (lhs == BALANCE_POSITIVE && is_negative(rhs)) || (lhs == BALANCE_SOFT_POSITIVE && rhs == BALANCE_NEGATIVE);
+  return (lhs == BALANCE_NEGATIVE && is_positive (rhs))
+         || (lhs == BALANCE_SOFT_NEGATIVE && rhs == BALANCE_POSITIVE)
+         || (lhs == BALANCE_POSITIVE && is_negative (rhs))
+         || (lhs == BALANCE_SOFT_POSITIVE && rhs == BALANCE_NEGATIVE);
 }
 
 /**
- * Two signum balances are strictly inverse: one positive, one negative. No 'soft' signs allowed
+ * Two signum balances are strictly inverse: one positive, one negative. No
+ * 'soft' signs allowed
  */
-static inline bool are_strict_complement(SignBalance lhs, SignBalance rhs)
+static inline bool
+are_strict_complement (SignBalance lhs, SignBalance rhs)
 {
-    return (lhs == BALANCE_NEGATIVE && rhs == BALANCE_POSITIVE) || (lhs == BALANCE_POSITIVE && rhs == BALANCE_NEGATIVE);
+  return (lhs == BALANCE_NEGATIVE && rhs == BALANCE_POSITIVE)
+         || (lhs == BALANCE_POSITIVE && rhs == BALANCE_NEGATIVE);
 }
 
 #endif

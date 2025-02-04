@@ -15,64 +15,63 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #include <string.h>
 
-#include "perlovka.h"
 #include "diff.h"
+#include "perlovka.h"
 #include "solver.h"
 
-void perlovka_denoize(PerlovkaOptions *options, void (*tick)())
+void
+perlovka_denoize (PerlovkaOptions *options, void (*tick) ())
 {
-    PSolver solver;
-    size_t size = options->width * options->height;
+  PSolver solver;
+  size_t size = options->width * options->height;
 
-    int max_height = options->height - options->radius - 1;
-    int max_width = options->width - options->radius - 1;
+  int max_height = options->height - options->radius - 1;
+  int max_width = options->width - options->radius - 1;
 
-    size_t resolved = 0;
-    int iteration = 0;
-    int solved_in_one_go;
-    int position;
-    int x, y;
-    int grid_index;
-    int solver_index;
+  size_t resolved = 0;
+  int iteration = 0;
+  int solved_in_one_go;
+  int position;
+  int x, y;
+  int grid_index;
+  int solver_index;
 
-    diff_horizontal(options->data, size);
-    diff_vertical(options->data, size, options->width);
+  diff_horizontal (options->data, size);
+  diff_vertical (options->data, size, options->width);
 
-    solver = build_solver(options->width,
-                          options->radius,
-                          options->grid,
-                          options->matching,
-                          options->resolver,
-                          options->field_matching);
+  solver = build_solver (options->width, options->radius, options->grid,
+                         options->matching, options->resolver,
+                         options->field_matching);
 
-    do
+  do
     {
-        solved_in_one_go = 0;
+      solved_in_one_go = 0;
 
-        for (y = options->radius; y < max_height; ++y)
+      for (y = options->radius; y < max_height; ++y)
         {
-            position = y * options->width + options->radius;
+          position = y * options->width + options->radius;
 
-            for (int x = options->radius; x < max_width; ++x)
+          for (int x = options->radius; x < max_width; ++x)
             {
-                ++position;
-                solved_in_one_go += apply_solver(solver, options->data, position);
+              ++position;
+              solved_in_one_go
+                  += apply_solver (solver, options->data, position);
             }
         }
-        resolved += solved_in_one_go;
+      resolved += solved_in_one_go;
 
-        if (tick)
-            tick();
-    } while (++iteration < options->iterations && solved_in_one_go > 0);
+      if (tick)
+        tick ();
+    }
+  while (++iteration < options->iterations && solved_in_one_go > 0);
 
-    clean_solver(solver);
+  clean_solver (solver);
 
-    undiff_vertical(options->data, size, options->width);
-    undiff_horizontal(options->data, size);
+  undiff_vertical (options->data, size, options->width);
+  undiff_horizontal (options->data, size);
 
-    options->iterations_made = iteration;
-    options->resolved = resolved;
+  options->iterations_made = iteration;
+  options->resolved = resolved;
 }

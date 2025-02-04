@@ -15,63 +15,66 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #include "diff.h"
 
-void diff_horizontal(int *const data, size_t size)
+void
+diff_horizontal (int *const data, size_t size)
 {
-    int *pt = data + 1;
-    int *pend = data + size;
-    int value = *data;
-    int next;
-    
-    while (pt < pend)
+  int *pt = data + 1;
+  int *pend = data + size;
+  int value = *data;
+  int next;
+
+  while (pt < pend)
     {
-        next = *pt;
-        *pt = next - value;
-        value = next;
-        ++pt;
+      next = *pt;
+      *pt = next - value;
+      value = next;
+      ++pt;
     }
 }
 
-void undiff_horizontal(int *const data, size_t size)
+void
+undiff_horizontal (int *const data, size_t size)
 {
-    int *pt = data + 1;
-    int *pend = data + size;
-    int *ps = data;
-    
-    while (pt < pend)
+  int *pt = data + 1;
+  int *pend = data + size;
+  int *ps = data;
+
+  while (pt < pend)
     {
-        *pt += *ps;
-        ++pt;
-        ++ps;
+      *pt += *ps;
+      ++pt;
+      ++ps;
     }
 }
 
-void diff_vertical(int *const data, size_t size, size_t width)
+void
+diff_vertical (int *const data, size_t size, size_t width)
 {
-    int *pt = data;
-    int *ps = data + width;
-    int *pend = data + size;
-    
-    while (ps < pend)
+  int *pt = data;
+  int *ps = data + width;
+  int *pend = data + size;
+
+  while (ps < pend)
     {
-        *pt -= *ps;
-        ++ps;
-        ++pt;
+      *pt -= *ps;
+      ++ps;
+      ++pt;
     }
 }
 
-void undiff_vertical(int *const data, size_t size, size_t width)
+void
+undiff_vertical (int *const data, size_t size, size_t width)
 {
-    int *ps = data + size - 1;
-    int *pt = ps - width;
-    int *pend = data;
-    
-    while (pt >= pend)
+  int *ps = data + size - 1;
+  int *pt = ps - width;
+  int *pend = data;
+
+  while (pt >= pend)
     {
-        *pt += *ps;
-        --ps;
-        --pt;
+      *pt += *ps;
+      --ps;
+      --pt;
     }
 }

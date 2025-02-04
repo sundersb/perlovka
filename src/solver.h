@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef SOLVER_H
 #define SOLVER_H
 
@@ -23,9 +22,9 @@
 
 typedef enum
 {
-    GRID_ODD,
-    GRID_EVEN,
-    GRID_BOTH,
+  GRID_ODD,
+  GRID_EVEN,
+  GRID_BOTH,
 } Grid;
 
 /**
@@ -33,15 +32,16 @@ typedef enum
  */
 typedef enum
 {
-    /**
-     * Soft: one pixel in the two pairs allowed to have zero difference
-     */
-    MATCHING_SOFT = 0,
+  /**
+   * Soft: one pixel in the two pairs allowed to have zero difference
+   */
+  MATCHING_SOFT = 0,
 
-    /**
-     * Strict mode: both diffs in one pair must be negative while in the other one positive
-     */
-    MATCHING_STRICT
+  /**
+   * Strict mode: both diffs in one pair must be negative while in the other
+   * one positive
+   */
+  MATCHING_STRICT
 } MatchMode;
 
 /**
@@ -49,37 +49,34 @@ typedef enum
  */
 typedef enum
 {
-    /**
-     * Closest to zero diff counts for compensation
-     */
-    RESOLVER_MINIMAL,
+  /**
+   * Closest to zero diff counts for compensation
+   */
+  RESOLVER_MINIMAL,
 
-    /**
-     * Minimal amplitude of pair-max taken for compensation
-     */
-    RESOLVER_LEAST_OF_MAX,
+  /**
+   * Minimal amplitude of pair-max taken for compensation
+   */
+  RESOLVER_LEAST_OF_MAX,
 
-    /**
-     * Maximal value between pair-mins used
-     */
-    RESOLVER_LARGEST_OF_MIN,
+  /**
+   * Maximal value between pair-mins used
+   */
+  RESOLVER_LARGEST_OF_MIN,
 
-    /**
-     * Furtherst from zero diff is used
-     */
-    RESOLVER_MAXIMAL
+  /**
+   * Furtherst from zero diff is used
+   */
+  RESOLVER_MAXIMAL
 } ResolveMode;
 
 typedef void *PSolver;
 
-PSolver build_solver(int width, int radius,
-                      Grid grid,
-                      MatchMode matching,
-                      ResolveMode resolver,
-                      bool field_matching);
+PSolver build_solver (int width, int radius, Grid grid, MatchMode matching,
+                      ResolveMode resolver, bool field_matching);
 
-void clean_solver(PSolver solver);
+void clean_solver (PSolver solver);
 
-int apply_solver(PSolver solver, int *const data, int position);
+int apply_solver (PSolver solver, int *const data, int position);
 
 #endif

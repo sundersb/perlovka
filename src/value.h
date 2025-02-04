@@ -15,32 +15,31 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef VALUE_H
 #define VALUE_H
 
-#include <stdbool.h>
 #include "balance.h"
+#include <stdbool.h>
 
 /**
  * Pixel diff pairs
  */
 typedef struct
 {
-    /**
-     * Diffs signum in the pair
-     */
-    SignBalance balance;
+  /**
+   * Diffs signum in the pair
+   */
+  SignBalance balance;
 
-    /**
-     * First diff value
-     */
-    int a;
+  /**
+   * First diff value
+   */
+  int a;
 
-    /**
-     * Second diff value
-     */
-    int b;
+  /**
+   * Second diff value
+   */
+  int b;
 } ArmValue;
 
 typedef ArmValue *const PValue;
@@ -49,56 +48,58 @@ typedef ArmValue const *const PCValue;
 /**
  * Build non-balanced diff pair
  */
-void init_value(PValue value, int a, int b);
+void init_value (PValue value, int a, int b);
 
 /**
  * Build diff pair and calculate signum balance
  */
-void init_balanced_value(PValue value, int a, int b);
+void init_balanced_value (PValue value, int a, int b);
 
 /**
  * Get furtherst from zero value from the pair
  */
-int get_value_maximum(PCValue value);
+int get_value_maximum (PCValue value);
 
 /**
  * Get closest to zero value from the pair
  */
-int get_value_minimum(PCValue value);
+int get_value_minimum (PCValue value);
 
 /**
- * Get minimal applicable compensation between pairs (resolve_mode.RESOLVER_MINIMAL)
+ * Get minimal applicable compensation between pairs
+ * (resolve_mode.RESOLVER_MINIMAL)
  */
-int get_minimal_delta(PCValue lhs, PCValue rhs);
+int get_minimal_delta (PCValue lhs, PCValue rhs);
 
 /**
  * Get moderate compensation between pairs (resolve_mode.RESOLVER_LEAST_OF_MAX)
  */
-int get_least_of_max_delta(PCValue lhs, PCValue rhs);
+int get_least_of_max_delta (PCValue lhs, PCValue rhs);
 
 /**
- * Get moderate compensation between pairs (resolve_mode.RESOLVER_LARGEST_OF_MIN)
+ * Get moderate compensation between pairs
+ * (resolve_mode.RESOLVER_LARGEST_OF_MIN)
  */
-int get_largest_of_min_delta(PCValue lhs, PCValue rhs);
+int get_largest_of_min_delta (PCValue lhs, PCValue rhs);
 
 /**
  * Get maximal compensation between pairs (resolve_mode.RESOLVER_MAXIMAL)
  */
-int get_maximal_delta(PCValue lhs, PCValue rhs);
+int get_maximal_delta (PCValue lhs, PCValue rhs);
 
 /**
  * Match pairs according to match_mode.MATCHING_STRICT
  */
-bool match_strict(PCValue lhs, PCValue rhs);
+bool match_strict (PCValue lhs, PCValue rhs);
 
 /**
  * Match pairs according to match_mode.MATCHING_SOFT
  */
-bool match_soft(PCValue lhs, PCValue rhs);
+bool match_soft (PCValue lhs, PCValue rhs);
 
 /**
  * Apply delta for the diffs pair
  */
-void fix_value(PValue value, int delta);
+void fix_value (PValue value, int delta);
 
 #endif

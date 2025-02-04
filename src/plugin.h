@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
@@ -30,41 +29,41 @@
  */
 typedef struct
 {
-    /**
-     * Maximum amount of denoize iterations for each channel
-     */
-    gint32 iterations_limit;
+  /**
+   * Maximum amount of denoize iterations for each channel
+   */
+  gint32 iterations_limit;
 
-    /**
-     * Maximal grain radius to detect
-     */
-    gint32 radius;
+  /**
+   * Maximal grain radius to detect
+   */
+  gint32 radius;
 
-    /**
-     * Grain detection grid: odd, even or both
-     */
-    gint32 grid;
+  /**
+   * Grain detection grid: odd, even or both
+   */
+  gint32 grid;
 
-    /**
-     * Grain detection mode: soft (0), strict (1)
-     */
-    gint32 matching;
+  /**
+   * Grain detection mode: soft (0), strict (1)
+   */
+  gint32 matching;
 
-    /**
-     * Grain resolve aggression: from minimal (0) to maximal (3)
-     */
-    gint32 resolver;
+  /**
+   * Grain resolve aggression: from minimal (0) to maximal (3)
+   */
+  gint32 resolver;
 
-    /**
-     * Compensate pixels around diagonals too
-     */
-    gboolean field_matching;
+  /**
+   * Compensate pixels around diagonals too
+   */
+  gboolean field_matching;
 } PerlovkaPluginSettings;
 
-#define _(String) gettext(String)
+#define _(String) gettext (String)
 
 #ifdef gettext_noop
-#define N_(String) gettext_noop(String)
+#define N_(String) gettext_noop (String)
 #else
 #define N_(String) (String)
 #endif

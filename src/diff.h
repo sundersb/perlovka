@@ -15,30 +15,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef DIFF_H
 #define DIFF_H
 
 #include <stddef.h>
 
 /**
- * Build horizontal diffs in place: diff value is current pixel minus the one on the left
+ * Build horizontal diffs in place: diff value is current pixel minus the one
+ * on the left
  */
-void diff_horizontal(int *const data, size_t size);
+void diff_horizontal (int *const data, size_t size);
 
 /**
  * Restore original image from the horizontal diffs
  */
-void undiff_horizontal(int *const data, size_t size);
+void undiff_horizontal (int *const data, size_t size);
 
 /**
  * Differentiate image vertically
  */
-void diff_vertical(int *const data, size_t size, size_t width);
+void diff_vertical (int *const data, size_t size, size_t width);
 
 /**
  * Reverse vertical differetiation
  */
-void undiff_vertical(int *const data, size_t size, size_t width);
+void undiff_vertical (int *const data, size_t size, size_t width);
 
 #endif

@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef POSITION_H
 #define POSITION_H
 
@@ -26,38 +25,39 @@
  */
 typedef struct
 {
-    /**
-     * First pixel position
-     */
-    int a;
+  /**
+   * First pixel position
+   */
+  int a;
 
-    /**
-     * Second pixel position
-     */
-    int b;
+  /**
+   * Second pixel position
+   */
+  int b;
 } ArmPosition;
 
 typedef ArmPosition *const PPosition;
 typedef ArmPosition const *const PCPosition;
 
-/** 
+/**
  * Build positions
  */
-void init_position(PPosition position, int a, int b);
+void init_position (PPosition position, int a, int b);
 
 /**
- * Build `target` as `source` translated to `delta`
+ * Build `target` as `source` translated by `delta`
  */
-void translated_position(PCPosition source, PPosition target, int delta);
+void translated_position (PCPosition source, PPosition target, int delta);
 
 /**
  * Get pixel pairs according to the position
  */
-void get_values(int const *const data, PCPosition position, PValue value);
+void get_values (int const *const data, PCPosition position, PValue value);
 
 /**
  * Modify diff values
  */
-void apply_delta(int *const data, PCPosition position, PValue value, int delta);
+void apply_delta (int *const data, PCPosition position, PValue value,
+                  int delta);
 
 #endif

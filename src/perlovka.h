@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef PERLOVKA_H
 #define PERLOVKA_H
 
@@ -26,60 +25,60 @@
  */
 typedef struct
 {
-    /**
-     * Array to denoize
-     */
-    int *data;
+  /**
+   * Array to denoize
+   */
+  int *data;
 
-    /**
-     * Actual amount of iterations done
-     */
-    int iterations_made;
+  /**
+   * Actual amount of iterations done
+   */
+  int iterations_made;
 
-    /**
-     * Amount of compensations performed
-     */
-    size_t resolved;
+  /**
+   * Amount of compensations performed
+   */
+  size_t resolved;
 
-    /**
-     * Image width
-     */
-    size_t width;
+  /**
+   * Image width
+   */
+  size_t width;
 
-    /**
-     * Image height
-     */
-    size_t height;
+  /**
+   * Image height
+   */
+  size_t height;
 
-    /**
-     * Supposed maximal radius of the grain
-     */
-    int radius;
+  /**
+   * Supposed maximal radius of the grain
+   */
+  int radius;
 
-    /**
-     * Iterations limit
-     */
-    int iterations;
+  /**
+   * Iterations limit
+   */
+  int iterations;
 
-    /**
-     * Grain detection grid
-     */
-    Grid grid;
+  /**
+   * Grain detection grid
+   */
+  Grid grid;
 
-    /**
-     * Fields matching mode
-     */
-    MatchMode matching;
+  /**
+   * Fields matching mode
+   */
+  MatchMode matching;
 
-    /**
-     * Grain compensation mode
-     */
-    ResolveMode resolver;
+  /**
+   * Grain compensation mode
+   */
+  ResolveMode resolver;
 
-    /**
-     * Compensate pixels around diagonals too
-     */
-    bool field_matching;
+  /**
+   * Compensate pixels around diagonals too
+   */
+  bool field_matching;
 } PerlovkaOptions;
 
 /**
@@ -87,6 +86,6 @@ typedef struct
  * @options Data to denoize
  * @tick Callback to use after each iteration
  */
-void perlovka_denoize(PerlovkaOptions *options, void (*tick)());
+void perlovka_denoize (PerlovkaOptions *options, void (*tick) ());
 
 #endif

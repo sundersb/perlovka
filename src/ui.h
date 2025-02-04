@@ -15,18 +15,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #ifndef PLUGIN_UI
 #define PLUGIN_UI
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
+#include "plugin.h"
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
-#include "plugin.h"
 
-gboolean show_perlovka_dialog(PerlovkaPluginSettings* options);
+gboolean show_perlovka_dialog (PerlovkaPluginSettings *options);
 
 #pragma GCC diagnostic pop
 
