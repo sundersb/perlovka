@@ -18,6 +18,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
+#include <glib.h>
 #include <libintl.h>
 
 #define PLUG_IN_PROC "plug-in-perlovka"
