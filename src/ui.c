@@ -35,7 +35,7 @@ show_perlovka_dialog (PerlovkaPluginSettings *settings)
 
   gimp_ui_init (PLUGIN_NAME, TRUE);
 
-  dlg = gimp_dialog_new (_ ("Perlovka Degranulation Filter"), PLUGIN_NAME,
+  dlg = gimp_dialog_new (_("Perlovka Degranulation Filter"), PLUGIN_NAME,
                          NULL, 0, gimp_standard_help_func, PLUG_IN_PROC,
                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OK,
                          GTK_RESPONSE_OK, NULL);
@@ -44,7 +44,7 @@ show_perlovka_dialog (PerlovkaPluginSettings *settings)
   gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dlg)->vbox), main_vbox);
 
-  frame = gimp_frame_new (_ ("Perlovka Settings"));
+  frame = gimp_frame_new (_("Perlovka Settings"));
   gtk_box_pack_start (GTK_BOX (main_vbox), frame, FALSE, FALSE, 0);
   gtk_widget_show (frame);
 
@@ -59,7 +59,7 @@ show_perlovka_dialog (PerlovkaPluginSettings *settings)
                                              0);
   spin = gimp_spin_button_new (adj, 1.0, 0);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin), TRUE);
-  gimp_table_attach_aligned (GTK_TABLE (table), 0, 0, _ ("_Radius:"), 0.0, 0.5,
+  gimp_table_attach_aligned (GTK_TABLE (table), 0, 0, _("_Radius:"), 0.0, 0.5,
                              spin, 1, TRUE);
   g_signal_connect (adj, "value-changed",
                     G_CALLBACK (gimp_int_adjustment_update),
@@ -69,35 +69,35 @@ show_perlovka_dialog (PerlovkaPluginSettings *settings)
                                              100, 1, 10, 0);
   spin = gimp_spin_button_new (adj, 1.0, 0);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin), TRUE);
-  gimp_table_attach_aligned (GTK_TABLE (table), 0, 1, _ ("_Iterations:"), 0.0,
+  gimp_table_attach_aligned (GTK_TABLE (table), 0, 1, _("_Iterations:"), 0.0,
                              0.5, spin, 1, TRUE);
   g_signal_connect (adj, "value-changed",
                     G_CALLBACK (gimp_int_adjustment_update),
                     &settings->iterations_limit);
 
-  combo = gimp_int_combo_box_new ("Odd", 0, "Even", 1, "Both", 2, NULL);
-  gimp_table_attach_aligned (GTK_TABLE (table), 0, 2, _ ("Grid:"), 0.0, 0.5,
+  combo = gimp_int_combo_box_new (_("Odd"), 0, _("Even"), 1, _("Both"), 2, NULL);
+  gimp_table_attach_aligned (GTK_TABLE (table), 0, 2, _("Grid:"), 0.0, 0.5,
                              combo, 1, FALSE);
   gimp_int_combo_box_connect (GIMP_INT_COMBO_BOX (combo), settings->grid,
                               G_CALLBACK (gimp_int_combo_box_get_active),
                               &settings->grid);
 
-  combo = gimp_int_combo_box_new ("Soft", 0, "Strict", 1, NULL);
-  gimp_table_attach_aligned (GTK_TABLE (table), 0, 3, _ ("Matching:"), 0.0,
+  combo = gimp_int_combo_box_new (_("Soft"), 0, _("Strict"), 1, NULL);
+  gimp_table_attach_aligned (GTK_TABLE (table), 0, 3, _("Matching:"), 0.0,
                              0.5, combo, 1, FALSE);
   gimp_int_combo_box_connect (GIMP_INT_COMBO_BOX (combo), settings->matching,
                               G_CALLBACK (gimp_int_combo_box_get_active),
                               &settings->matching);
 
-  combo = gimp_int_combo_box_new ("Minimal", 0, "Least of Max", 1,
-                                  "Largest of Min", 2, "Maximal", 3, NULL);
-  gimp_table_attach_aligned (GTK_TABLE (table), 0, 4, _ ("Resolver:"), 0.0,
+  combo = gimp_int_combo_box_new (_("Minimal"), 0, _("Least of Max"), 1,
+                                  _("Largest of Min"), 2, _("Maximal"), 3, NULL);
+  gimp_table_attach_aligned (GTK_TABLE (table), 0, 4, _("Resolver:"), 0.0,
                              0.5, combo, 1, FALSE);
   gimp_int_combo_box_connect (GIMP_INT_COMBO_BOX (combo), settings->resolver,
                               G_CALLBACK (gimp_int_combo_box_get_active),
                               &settings->resolver);
 
-  check = gtk_check_button_new_with_label ("Field matching");
+  check = gtk_check_button_new_with_label (_("Field matching"));
   gimp_table_attach_aligned (GTK_TABLE (table), 0, 5, NULL, 0.0, 0.5, check, 1,
                              FALSE);
   g_signal_connect (check, "toggled", G_CALLBACK (gimp_toggle_button_update),

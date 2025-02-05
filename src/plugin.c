@@ -115,9 +115,9 @@ query (void)
   };
 
   gimp_install_procedure (
-      PLUG_IN_PROC, N_ ("Perlovka"), "Reduces granularity in photo films",
+      PLUG_IN_PROC, N_("Perlovka"), "Reduces granularity in photo films",
       "Alexander Belkov", "Alexander Belkov", "2025",
-      N_ ("Per_lovka Degranulation..."), "RGB*, GRAY*", GIMP_PLUGIN,
+      N_("Per_lovka Degranulation..."), "RGB*, GRAY*", GIMP_PLUGIN,
       G_N_ELEMENTS (args), 0, args, NULL);
 
   gimp_plugin_menu_register (PLUG_IN_PROC, "<Image>/Filters/Enhance");
@@ -384,7 +384,7 @@ denoize (struct PerlovkaData *data)
 
   if (conditions.show_progress)
     {
-      gimp_progress_init (_ ("Perlovka working..."));
+      gimp_progress_init (_("Perlovka working..."));
       progress = do_progress;
       conditions.progress_tick
           = 1.0 / settings.iterations_limit / data->color_count;
@@ -443,7 +443,7 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
 
   image_type = data->color_count == 1 ? GIMP_GRAY_IMAGE : GIMP_RGB_IMAGE;
 
-  layer_id = gimp_layer_new (image_id, "Perlovka", data->width, data->height,
+  layer_id = gimp_layer_new (image_id, _("Perlovka"), data->width, data->height,
                              image_type, 100.0, GIMP_LAYER_MODE_NORMAL);
 
   gimp_image_insert_layer (image_id, layer_id, 0, 0);
