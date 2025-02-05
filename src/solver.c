@@ -74,16 +74,20 @@ make_cross (PBox box, PBox next_grid, int width, int radius, bool odd)
 
   if (odd)
     {
-      // A |   | B
-      //     x
-      // C |   | D
+      /*
+       * A |   | B
+       *     x
+       * C |   | D
+       */
       row_top = row;
       delta_right = radius;
     }
   else
     {
-      // A | B(x)
-      // C | D
+      /*
+       * A | B(x)
+       * C | D
+       */
       row_top = row - width;
       delta_right = radius - 1;
     }
@@ -125,7 +129,7 @@ make_box (PBox box, PBox next_grid, int width, int radius, bool odd)
 
   for (int count = 1; count < radius; ++count)
     {
-      // Pair by the rows
+      /* Pair by the rows */
       init_position (&box->first, row_top + delta_left + count,
                      row_bottom + delta_right - count);
       init_position (&box->second, row_top + delta_right - count,
@@ -135,7 +139,7 @@ make_box (PBox box, PBox next_grid, int width, int radius, bool odd)
 
       other_row = width * count;
 
-      // Pair by the columns
+      /* Pair by the columns */
       init_position (&box->first, row_top - other_row + delta_left,
                      row_bottom + other_row + delta_right);
       init_position (&box->second, row_top - other_row + delta_right,

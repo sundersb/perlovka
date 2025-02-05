@@ -473,7 +473,7 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
 
   gimp_drawable_merge_shadow (layer_id, FALSE);
 
-  // New layer's thumbnail would be black withoud this:
+  /* New layer's thumbnail would be black withoud this: */
   gimp_drawable_update (layer_id, 0, 0, data->width, data->height);
 
   return GIMP_PDB_SUCCESS;
