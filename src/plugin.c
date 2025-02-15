@@ -31,6 +31,8 @@ static void query (void);
 static void run (const gchar *name, gint nparams, const GimpParam *param,
                  gint *nreturn_vals, GimpParam **return_vals);
 
+void get_layer_caption (gchar *buffer);
+
 const Grid default_grid = GRID_ODD;
 const MatchMode default_matching = MATCHING_SOFT;
 const ResolveMode default_resolver = RESOLVER_LARGEST_OF_MIN;
@@ -114,11 +116,11 @@ query (void)
       "Compensation mode: minimal, least-of-max, largest-of-min, maximal" },
   };
 
-  gimp_install_procedure (
-      PLUG_IN_PROC, N_("Perlovka"), "Reduces granularity in photo films",
-      "Alexander Belkov", "Alexander Belkov", "2025",
-      N_("Per_lovka Degranulation..."), "RGB*, GRAY*", GIMP_PLUGIN,
-      G_N_ELEMENTS (args), 0, args, NULL);
+  gimp_install_procedure (PLUG_IN_PROC, N_("Perlovka"),
+                          "Reduces granularity in photo films",
+                          "Alexander Belkov", "Alexander Belkov", "2025",
+                          N_("Per_lovka Degranulation..."), "RGB*, GRAY*",
+                          GIMP_PLUGIN, G_N_ELEMENTS (args), 0, args, NULL);
 
   gimp_plugin_menu_register (PLUG_IN_PROC, "<Image>/Filters/Enhance");
 }
@@ -423,6 +425,7 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
   size_t index;
   int cindex, channels;
   int *cptr[4];
+  gchar text[200];
 
   buf = g_new (guchar, data->color_count * data->size);
 
@@ -443,7 +446,9 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
 
   image_type = data->color_count == 1 ? GIMP_GRAY_IMAGE : GIMP_RGB_IMAGE;
 
-  layer_id = gimp_layer_new (image_id, _("Perlovka"), data->width, data->height,
+  get_layer_caption (text);
+
+  layer_id = gimp_layer_new (image_id, text, data->width, data->height,
                              image_type, 100.0, GIMP_LAYER_MODE_NORMAL);
 
   gimp_image_insert_layer (image_id, layer_id, 0, 0);
@@ -535,6 +540,74 @@ run (const gchar *name, gint nparams, const GimpParam *param,
     gimp_set_data (PLUG_IN_PROC, &settings, sizeof (PerlovkaPluginSettings));
 
   values[0].data.d_status = status;
+}
+
+void
+get_layer_caption (gchar *buffer)
+{
+  gchar *caption;
+
+  sprintf (buffer, "%s %u/%u ", _("Perlovka"), settings.radius,
+           settings.iterations_limit);
+
+  switch (settings.grid)
+    {
+    case GRID_ODD:
+      caption = _("Odd");
+      break;
+
+    case GRID_EVEN:
+      caption = _("Even");
+      break;
+
+    case GRID_BOTH:
+      caption = _("Both");
+      break;
+    }
+
+  strcat (buffer, caption);
+  strcat (buffer, ", ");
+
+  switch (settings.matching)
+    {
+    case MATCHING_SOFT:
+      caption = _("Soft");
+      break;
+
+    case MATCHING_STRICT:
+      caption = _("Strict");
+      break;
+    }
+
+  strcat (buffer, caption);
+  strcat (buffer, "-");
+
+  switch (settings.resolver)
+    {
+    case RESOLVER_MINIMAL:
+      caption = _("Min");
+      break;
+
+    case RESOLVER_LEAST_OF_MAX:
+      caption = _("Lst");
+      break;
+
+    case RESOLVER_LARGEST_OF_MIN:
+      caption = _("Lar");
+      break;
+
+    case RESOLVER_MAXIMAL:
+      caption = _("Max");
+      break;
+    }
+
+  strcat (buffer, caption);
+
+  if (settings.field_matching)
+    {
+      strcat (buffer, ", ");
+      strcat (buffer, _("Fields"));
+    }
 }
 
 #ifndef PERLOVKA_USE_GEGL
