@@ -15,6 +15,8 @@ else
 endif
 
 CORE_OBJS = obj/diff.o obj/perlovka.o obj/position.o obj/solver.o obj/value.o
+
+# Replace plugin.o by plugin_old.o to build without GEGL support:
 PLUGIN_OBJS = obj/plugin.o obj/ui.o
 
 TESTS_OBJS = obj/test.o obj/balance_test.o obj/solver_test.o

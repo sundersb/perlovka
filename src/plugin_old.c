@@ -15,6 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <libgimp/gimp.h>
 
 #include "perlovka.h"
@@ -190,10 +193,10 @@ load_params (gint nparams, const GimpParam *param)
 GimpPDBStatusType
 load_data (struct PerlovkaData *data, gint32 drawable_id)
 {
-  GeglBuffer *buffer;
-  const Babl *format;
-  guint16 *buf;
-  guint16 *ptr;
+  GimpDrawable *drawable;
+  GimpPixelRgn region;
+  guchar *buf;
+  guchar *ptr;
   int *cptr[4];
   int cindex;
   size_t index;
@@ -216,14 +219,11 @@ load_data (struct PerlovkaData *data, gint32 drawable_id)
   data->height = height;
   data->size = width * height;
 
-  channels = data->color_count;
-
-  buffer = gimp_drawable_get_buffer (drawable_id);
-  if (buffer == NULL)
+  drawable = gimp_drawable_get (drawable_id);
+  if (drawable == NULL)
     return GIMP_PDB_EXECUTION_ERROR;
 
-  buf = g_new (guint16, channels * data->size);
-
+  buf = g_new (guchar, channels * data->size);
   if (buf == NULL)
     return GIMP_PDB_EXECUTION_ERROR;
 
@@ -232,11 +232,8 @@ load_data (struct PerlovkaData *data, gint32 drawable_id)
       cptr[cindex] = data->channels[cindex] = g_new (int, data->size);
     }
 
-  format = data->color_count == 1 ? babl_format ("Y' u16")
-                                  : babl_format ("CIE Lab u16");
-
-  gegl_buffer_get (buffer, GEGL_RECTANGLE (0, 0, data->width, data->height),
-                   1.0, format, buf, GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_CLAMP);
+  gimp_pixel_rgn_init (&region, drawable, 0, 0, width, height, FALSE, FALSE);
+  gimp_pixel_rgn_get_rect (&region, buf, 0, 0, width, height);
 
   ptr = buf;
   for (index = 0; index < data->size; ++index)
@@ -250,7 +247,7 @@ load_data (struct PerlovkaData *data, gint32 drawable_id)
     }
 
   g_free (buf);
-  g_object_unref (buffer);
+  gimp_drawable_detach (drawable);
 
   return GIMP_PDB_SUCCESS;
 }
@@ -263,7 +260,7 @@ clean_data (struct PerlovkaData *data)
 {
   int index;
 
-  for (index = 0; index < data->color_count; ++index)
+  for (index = 0; index < data->channels_count; ++index)
     {
       if (data->channels[index])
         g_free (data->channels[index]);
@@ -313,9 +310,9 @@ normalize (int *data, size_t size)
         }
     }
 
-  if (amplitude > USHRT_MAX)
+  if (amplitude > UCHAR_MAX)
     {
-      q = (double)USHRT_MAX / (double)amplitude;
+      q = (double)UCHAR_MAX / (double)amplitude;
 
       ptr = data;
       while (ptr < end)
@@ -359,13 +356,17 @@ denoize (struct PerlovkaData *data)
     {
       gimp_progress_init (_("Perlovka working..."));
       progress = do_progress;
-      conditions.progress_tick = 1.0 / settings.iterations_limit;
+      conditions.progress_tick
+          = 1.0 / settings.iterations_limit / data->color_count;
       conditions.progress_count = 0.0;
     }
 
-  run_options.data = data->channels[0];
-  perlovka_denoize (&run_options, progress);
-  normalize (data->channels[0], data->size);
+    for (index = 0; index < data->color_count; ++index)
+      {
+        run_options.data = data->channels[index];
+        perlovka_denoize (&run_options, progress);
+        normalize (data->channels[index], data->size);
+      }
 
   gimp_progress_update (1.0);
 
@@ -378,10 +379,10 @@ denoize (struct PerlovkaData *data)
 GimpPDBStatusType
 paste_result (gint32 image_id, struct PerlovkaData *data)
 {
-  GeglBuffer *buffer;
-  const Babl *format;
-  guint16 *buf;
-  guint16 *ptr;
+  GimpDrawable *layer;
+  GimpPixelRgn region;
+  guchar *buf;
+  guchar *ptr;
   GimpImageType image_type;
   gint32 layer_id;
   size_t index;
@@ -389,10 +390,9 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
   int *cptr[4];
   gchar text[200];
 
+  buf = g_new (guchar, data->color_count * data->size);
+
   channels = data->color_count;
-
-  buf = g_new (guint16, channels * data->size);
-
   for (cindex = 0; cindex < channels; ++cindex)
     cptr[cindex] = data->channels[cindex];
 
@@ -401,7 +401,7 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
     {
       for (cindex = 0; cindex < channels; ++cindex)
         {
-          *ptr = (guint16)*cptr[cindex];
+          *ptr = (guchar)*cptr[cindex];
           ++cptr[cindex];
           ++ptr;
         }
@@ -416,16 +416,13 @@ paste_result (gint32 image_id, struct PerlovkaData *data)
 
   gimp_image_insert_layer (image_id, layer_id, 0, 0);
 
-  buffer = gimp_drawable_get_shadow_buffer (layer_id);
+  gimp_pixel_rgn_init (&region, layer, 0, 0, data->width, data->height, TRUE,
+                       TRUE);
 
-  format = data->color_count == 1 ? babl_format ("Y' u16")
-                                  : babl_format ("CIE Lab u16");
-
-  gegl_buffer_set (buffer, GEGL_RECTANGLE (0, 0, data->width, data->height), 0,
-                   format, buf, GEGL_AUTO_ROWSTRIDE);
+  gimp_pixel_rgn_set_rect (&region, buf, 0, 0, data->width, data->height);
 
   g_free (buf);
-  g_object_unref (buffer);
+  gimp_drawable_detach (layer);
 
   gimp_drawable_merge_shadow (layer_id, FALSE);
 
@@ -444,8 +441,6 @@ run (const gchar *name, gint nparams, const GimpParam *param,
   GimpPDBStatusType status = GIMP_PDB_SUCCESS;
   gint32 image_id;
   gint32 drawable_id;
-
-  gegl_init (NULL, NULL);
 
   values[0].type = GIMP_PDB_STATUS;
 
@@ -558,3 +553,5 @@ get_layer_caption (gchar *buffer)
       strcat (buffer, _("Fields"));
     }
 }
+
+#pragma GCC diagnostic pop
