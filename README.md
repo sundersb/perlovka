@@ -2,23 +2,23 @@
 
 This repository contains Perlovka filter implementation for GIMP.
 
-This filter reduces granularity level in photo images. You may see examples here: [original image](./docs/00-original.png) and one with the [filter applied](./docs/01-denoized.png).
+The filter reduces granularity level in photo images. You may see examples here: [original image](./docs/00-original.png) and one with the [filter applied](./docs/01-denoized.png).
 
 ![Perlovka Example](./docs/02-example.png "Perlovka Example")
 
 ## Advantages and Drawbacks
 
-This filter does not smooth image or damage it at all on light or moderate settings. Granularity generally looks remarkably paler when this filter applied and some grains are removed without a trace.
+This filter does not smooth image or damage it on light or moderate settings when the pattern is not too motley. Granularity generally looks remarkably paler when the filter applied and some grains are removed without a trace.
 
-The algorythm is not too resource intensive on light and moderate settings. Aggressive settings can save badly injured images but with a penalty: result would never be ideal.
+The algorythm is not resource intensive on light and moderate settings. Aggressive settings can save badly injured images but with a penalty: result would never be ideal.
 
-Perlovka is not intended to repair chroma noize and should be cautiously used on color images.
+Perlovka is not intended to repair chroma noize. The GEGL implementation repairs isolated luminance channel in color images and does not damage chroma.
 
 ## Installation
 
 ### Requirements
 
-In order to build and install the filter `gimptools-2.0` package required along with C compiler (GCC, Cygwin64). No other external references apart from GIMP are used.
+In order to build and install the filter `gimptools-2.0` package required along with C compiler (GCC, Cygwin64).
 
 To install run the following:
 
@@ -29,7 +29,7 @@ make install
 
 ## Description
 
-Perlovka studies and makes correction in twice differentiated image. First it calculates horizontal differences of the image color channel: each element of the resulting array is the value of the corresponding pixel minus the one on the left. Then the horizontal diff is differentiated once more - vertically (by columns).
+Perlovka studies and makes correction in twice differentiated image. First it calculates horizontal differences of the image luminance channel: each element of the resulting array is the value of the corresponding pixel minus the one on the left. Then the horizontal diff is differentiated once more - vertically (by columns).
 
 Granulation blot in the resulting array is represented by specific chequered pattern: four symmetrical pixels around a guilty one are declined from zero so that the two on one diagonal are positive while the other two are negative.
 
@@ -39,7 +39,7 @@ When the compensation is over the two-fold diff is differentiated the other way 
 
 ## Explanation
 
-Horizontal difference of an image (a color channel to be exact) contains both negative and positive values along with zeros. Overall view of this data is impossible until the values are raised by say half a byte to get rid of negatives. If we do that and build an image from the data we'll see something like that:
+Horizontal difference of an image (of a luminance channel to be exact) contains both negative and positive values along with zeros. Overall view of this data is impossible until the values are raised by say half a byte to get rid of negatives. If we do that and build an image from the data we'll see something like that:
 
 ![Horizontal Diff](./docs/03-diff-horizontal.png "Horizontal Diff")
 
@@ -51,7 +51,7 @@ Dark stripe on the light background of the image leaves two parallel stripes on 
 
 ![Vertical Strike](./docs/05-strike-in-horizontal-diff.png "Vertical Strike")
 
-This apparition is obvious if we remember that going along the pixels row we meet first light-to-darkwite front (from background to the strip) then the reverse: from the dark of the stripe back to the background.
+This apparition is obvious if we remember that going along the pixels row we meet first light-to-dark front (from background to the stripe) then the reverse: from the dark of the stripe back to the background.
 
 A dot or a small blot on the image behaves likewise. It builds the same very blot but consisting from two halves on the diff-picture: one light and one dark.
 
@@ -63,15 +63,15 @@ If the horizontal diff-picture is differentiated then vertically the contours mo
 
 ![Grain on the Diff Image](./docs/07-grain-in-diffs.png "Grain on the Diff Image")
 
-Trying to remove the just detected grain on the original image is not a stright-forward task. One can reconstruct the background under the grain: take pixels around it and build a system of linear equations. This would give ideal result but only in ideal conditions: area around must be absolutely sound, grains must not fuse with each other and the background must be homogenous. These conditions are rarely met and such approach would always damage the image.
+Trying to remove the just detected grain on the original image is not a stright-forward task. One can reconstruct the background under the grain: take pixels around it, build a system of linear equations and extrapolate values in damaged area. This would give ideal result but only in ideal conditions: area around must be absolutely sound, grains must not fuse with each other and the background must be homogenous. These conditions are rarely met and such approach would damage the image in most cases.
 
-Perlovka edits the twice-diff picture instead. Differentiation is reversable: the original image can be restored from the diffs at 100% accuracy.
+Perlovka edits the twice-diff picture instead. Since differentiation is reversable the original image can be restored from the diffs at 100% accuracy.
 
-When a pixel is changed on the diffs-picture two stripes will appear on the restored image: one going right and one down. The edited pixel leaves these two shadows.
+When a pixel is changed on the diffs-picture two stripes will appear on the restored image: one going right and one down. They look like shadows cast by the edited pixel.
 
 ![Grain Compensation](./docs/08-grain_fix.png "Grain Compensation")
 
-In order to prevent this artefact four pixels must be changed at the same time. All of the pixels must lay in the corners of the same box. The two opposite one another are changed in one direction, the other two in reverse by the same value.
+In order to prevent this artefact four pixels must be changed at the same time. All of the pixels must lay in the corners of the same box. The two opposite one another are changed in one direction, the other two in reverse by the same value. This approach makes two borders of the box formed by "the four" lighter and the other two darker - exactly what we need.
 
 ## Behaviour and Settings
 
@@ -79,7 +79,7 @@ In order to prevent this artefact four pixels must be changed at the same time. 
 
 Grains are rarely limited by area 3 x 3 pixels. The `Radius` setting allows to extend grain pattern search radius to the required one. Radius value of 5 is generally more than enough. Setting it higher hardly gives any benefit in most cases but neither brings it penalties.
 
-High radius does not reduce performance since values further from the pixel which is being worked on at the moment are discarded from consideration if the closer ones do not need compensation.
+>> High radius does not reduce performance since values further from the pixel which is being worked on at the moment are discarded from consideration if the closer ones do not need compensation.
 
 ### Iterations
 
@@ -97,7 +97,7 @@ But this grid would fail to detect grain centered between pixels. This condition
 
 To deal with the both grain centrations the *Both* setting for `Grid` can be used. This requires twice the time amount to resolve the image but gives better results.
 
-General recommendation is to try the *Odd* grid centration and resort to the *Both* when the result is not satisfying. For less aggressive grain detection the *Both* grid may be used from the first.
+General recommendation is to try the *Odd* grid centration and resort to the *Both* when the result is not satisfying. For less aggressive grain detection the *Both* grid may be used from the start.
 
 ### Matching
 
@@ -125,4 +125,4 @@ When this checkbox is off classical comparison is enacted: only one comparison f
 
 The `Field matching` on compares all the "fours" for the radius. That is three comparisons on radius 2, five on radius 3 etc.
 
-The setting is more or less experimental and has been added with consideration that grain may have not only perfect round form but alongated or altogether irregular. It does not make sence to turn it on in most situations but can be considered when all other means to repair the image are fruitless.
+The setting is more or less experimental and has been added with consideration that grain may have not only perfect round form but be alongated or altogether irregular. It does not make sence to turn it on in most situations but can be considered when all other means to repair the image are fruitless.
