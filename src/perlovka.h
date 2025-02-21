@@ -79,6 +79,11 @@ typedef struct
    * Compensate pixels around diagonals too
    */
   bool field_matching;
+
+  /**
+   * Progress callback called after each iteration
+   */
+  void (*progress) ();
 } PerlovkaOptions;
 
 /**
@@ -86,6 +91,6 @@ typedef struct
  * @options Data to denoize
  * @tick Callback to use after each iteration
  */
-void perlovka_denoize (PerlovkaOptions *options, void (*tick) ());
+void perlovka_denoize (PerlovkaOptions *options);
 
 #endif

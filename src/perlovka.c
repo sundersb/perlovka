@@ -22,7 +22,7 @@
 #include "solver.h"
 
 void
-perlovka_denoize (PerlovkaOptions *options, void (*tick) ())
+perlovka_denoize (PerlovkaOptions *options)
 {
   PSolver solver;
   size_t size = options->width * options->height;
@@ -62,8 +62,8 @@ perlovka_denoize (PerlovkaOptions *options, void (*tick) ())
         }
       resolved += solved_in_one_go;
 
-      if (tick)
-        tick ();
+      if (options->progress)
+        options->progress ();
     }
   while (++iteration < options->iterations && solved_in_one_go > 0);
 

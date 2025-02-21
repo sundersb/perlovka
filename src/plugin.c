@@ -344,7 +344,6 @@ denoize (struct PerlovkaData *data)
 {
   PerlovkaOptions run_options;
   int index;
-  void (*progress) () = NULL;
 
   run_options.width = data->width;
   run_options.height = data->height;
@@ -354,17 +353,18 @@ denoize (struct PerlovkaData *data)
   run_options.matching = settings.matching;
   run_options.resolver = settings.resolver;
   run_options.field_matching = settings.field_matching;
+  run_options.progress = NULL;
 
   if (conditions.show_progress)
     {
       gimp_progress_init (_("Perlovka working..."));
-      progress = do_progress;
+      run_options.progress = do_progress;
       conditions.progress_tick = 1.0 / settings.iterations_limit;
       conditions.progress_count = 0.0;
     }
 
   run_options.data = data->channels[0];
-  perlovka_denoize (&run_options, progress);
+  perlovka_denoize (&run_options);
   normalize (data->channels[0], data->size);
 
   gimp_progress_update (1.0);
