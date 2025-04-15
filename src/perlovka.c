@@ -63,7 +63,7 @@ perlovka_denoize (PerlovkaOptions *options)
       resolved += solved_in_one_go;
 
       if (options->progress)
-        options->progress ();
+        options->progress (options->context);
     }
   while (++iteration < options->iterations && solved_in_one_go > 0);
 

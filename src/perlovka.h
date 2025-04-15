@@ -79,11 +79,16 @@ typedef struct
    * Compensate pixels around diagonals too
    */
   bool field_matching;
-
+  
   /**
    * Progress callback called after each iteration
    */
-  void (*progress) ();
+  void (*progress) (void *context);
+
+  /**
+   * Progress context for the callback
+   */
+  void *context;
 } PerlovkaOptions;
 
 /**

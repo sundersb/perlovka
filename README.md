@@ -16,7 +16,7 @@ Perlovka is not intended to repair chroma noize. The GEGL implementation repairs
 
 ## Installation
 
-### Requirements
+### Requirements for Building GIMP-2.0 Plug-in
 
 In order to build and install the filter `gimptools-2.0` package required along with C compiler (GCC, Cygwin64).
 
@@ -26,6 +26,20 @@ To install run the following:
 make
 make install
 ~~~
+
+### Requirements for Building GEGL-0.4 Plug-in
+
+* Development package for `gegl-0.4`.
+* Meson build tools.
+
+~~~sh
+mkdir _build
+cd _build
+meson setup ..
+ninja
+~~~
+
+Copy `perlovka.o` or `perlovka.dll` to GEGL plugins directory.
 
 ## Description
 
@@ -79,7 +93,7 @@ In order to prevent this artefact four pixels must be changed at the same time. 
 
 Grains are rarely limited by area 3 x 3 pixels. The `Radius` setting allows to extend grain pattern search radius to the required one. Radius value of 5 is generally more than enough. Setting it higher hardly gives any benefit in most cases but neither brings it penalties.
 
->> High radius does not reduce performance since values further from the pixel which is being worked on at the moment are discarded from consideration if the closer ones do not need compensation.
+> High radius does not reduce performance since values further from the pixel which is being worked on at the moment are discarded from consideration if the closer ones do not need compensation.
 
 ### Iterations
 
